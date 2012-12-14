@@ -59,7 +59,7 @@ class Kohana_Solr {
 		{
 			if ($config === NULL)
 			{
-				$config = Kohana::config('solr')->$name;
+				$config = Kohana::$config->load('solr')->get($name);
 			}
 
 			Solr::$instances[$name] = new Solr($name, $config);
@@ -378,7 +378,7 @@ class Kohana_Solr {
 		) + $this->curl_options;
 
 		// Execute response
-		$response = Remote::get($url, $options);
+		$response = Kohana_Request::factory($url)->method(Request::POST)->body($data)->headers('Content-type', 'application/json')->execute();
 
 		// Return decoded result
 		return json_decode($response, TRUE);
@@ -417,7 +417,7 @@ class Kohana_Solr {
 		// Build request URL
 		$url = $this->config['api_url'].Solr::SEARCH_SERVLET.'?'.Solr::build_query($params);
 
-		return json_decode(Remote::get($url, $this->curl_options), TRUE);
+		return json_decode(file_get_contents($url), TRUE);
 	}
 
 	/**
